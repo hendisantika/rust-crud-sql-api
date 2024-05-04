@@ -47,3 +47,30 @@ pub async fn get_users(connection: &PgPool) -> Result<Option<Vec<User>>, Rejecti
         .ok();
     Ok(result)
 }
+
+pub async fn create_user(_req: UserCreateRequest, connection: &PgPool) -> Result<u64, DatabaseError> {
+    let result = query_unchecked!(
+        r#"INSERT INTO users (id, email, name, password, role, created_at) VALUES ($1, $2, $3, $4, $5, $6)"#,
+        uuid::Uuid::new_v4(),
+        _req.email,
+        _req.name,
+        _req.password,
+        _req.role.unwrap().to_string(),
+        Utc::now()
+    )
+        .execute(connection)
+        .await
+        .map(|_| 0)
+        .map_err(|_e| {
+            let _reply = match _e.as_database_error() {
+                None => println!("ERR"),
+                Some(err) => {
+                    println!("ERR {:?}", err.message().to_string());
+                    return DatabaseError { message: err.message().to_string() };
+                }
+            };
+            return DatabaseError { message: String::from("test") };
+        });
+
+    return result;
+}
