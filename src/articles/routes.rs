@@ -41,4 +41,7 @@ pub fn routes(_env: Environment) -> BoxedFilter<(impl Reply, )> {
         .and(auth::middleware::with_auth(Role::Admin))
         .and_then(handlers::update_home_view_handler));
 
+    let get_comments_route = warp::get().and(warp::path!("api" / "articles" / "comments" / String)
+        .and(environment::with_env(_env.clone()))
+        .and_then(handlers::get_article_comments_handler));
 }
