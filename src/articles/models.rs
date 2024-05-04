@@ -11,3 +11,14 @@ pub struct Article {
     pub updated_at: Option<DateTime<Utc>>,
     pub in_home: Option<bool>,
 }
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub struct Comment {
+    pub id: uuid::Uuid,
+    pub article_id: uuid::Uuid,
+    pub author: String,
+    pub email: String,
+    pub content: String,
+    pub created_at: Option<DateTime<Utc>>,
+    pub updated_at: Option<DateTime<Utc>>,
+}
