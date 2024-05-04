@@ -12,3 +12,21 @@ pub enum AuthError {
 }
 
 impl warp::reject::Reject for AuthError {}
+
+#[derive(Error, Debug, Serialize)]
+pub enum AppError {
+    #[error("wrong credentials")]
+    WrongCredentialsError,
+    #[error("jwt token not valid")]
+    JWTTokenError,
+    #[error("jwt token creation failed")]
+    JWTTokenCreationError,
+    #[error("no auth header")]
+    NoAuthHeaderError,
+    #[error("invalid auth header")]
+    InvalidAuthHeaderError,
+    #[error("no permission")]
+    NoPermissionError,
+}
+
+impl warp::reject::Reject for AppError {}
