@@ -16,3 +16,8 @@ pub async fn get_home_article_headers_handler(_env: Environment) -> WebResult<im
     let _result = service::get_home_article_headers(_env.db()).await?;
     Ok(warp::reply::json(&_result))
 }
+
+pub async fn get_article_headers_handler(_env: Environment) -> WebResult<impl Reply> {
+    let _result = service::get_article_headers(_env.db()).await?;
+    Ok(warp::reply::json(&_result))
+}
