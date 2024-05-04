@@ -34,3 +34,12 @@ pub struct LoginRequest {
     pub email: String,
     pub password: String,
 }
+
+#[derive(Serialize)]
+pub struct LoginResponse {
+    pub id: uuid::Uuid,
+    pub email: String,
+    pub name: String,
+    pub roles: Vec<String>,
+    pub access_token: String,
+}
