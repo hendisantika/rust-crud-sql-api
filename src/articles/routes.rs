@@ -44,4 +44,9 @@ pub fn routes(_env: Environment) -> BoxedFilter<(impl Reply, )> {
     let get_comments_route = warp::get().and(warp::path!("api" / "articles" / "comments" / String)
         .and(environment::with_env(_env.clone()))
         .and_then(handlers::get_article_comments_handler));
+
+    let post_comment_route = warp::post().and(warp::path!("api" / "articles" / "comments")
+        .and(warp::body::json())
+        .and(environment::with_env(_env.clone()))
+        .and_then(handlers::post_comment_handler));
 }
