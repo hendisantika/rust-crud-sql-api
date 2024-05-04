@@ -44,3 +44,9 @@ pub async fn update_article_handler(_req: Article, _env: Environment, _user: Aut
     println!("[update_article_handler] id={}, title={}", &original.id.unwrap(), &original.title.unwrap());
     Ok(warp::reply::json(&json!({"status":"success", "message":"Article updated"})))
 }
+
+pub async fn delete_article_handler(_id: String, _env: Environment, _user: AuthUser) -> WebResult<impl Reply> {
+    println!("[delete_article_handler] id={}", _id.clone());
+    let _result = service::delete_article(&_id, _env.db()).await?;
+    Ok(warp::reply::json(&json!({"status":"success", "message":"Article deleted"})))
+}
