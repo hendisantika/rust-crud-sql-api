@@ -114,3 +114,16 @@ pub async fn update_home_view(_id: String, connection: &PgPool) -> Result<Option
         .unwrap();
     Ok(Some(0))
 }
+
+pub async fn get_comments(_id: String, connection: &PgPool) -> Result<Option<Vec<Comment>>, Rejection> {
+    let result = query_as_unchecked!(
+        Comment,
+        r#"SELECT id, author, email, content, article_id, created_at, updated_at FROM comments WHERE article_id=$1"#,
+        uuid::Uuid::parse_str(&_id).unwrap()
+    )
+        .fetch_all(connection)
+        .await
+        .map_err(|_e| { anyhow::Error::new(_e) })
+        .ok();
+    Ok(result)
+}
