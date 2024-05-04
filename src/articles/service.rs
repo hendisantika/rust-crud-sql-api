@@ -18,3 +18,17 @@ pub async fn get_article_by_id(_id: uuid::Uuid, connection: &PgPool) -> Result<O
         .ok();
     Ok(result)
 }
+
+pub async fn get_article_by_url(_url: String, connection: &PgPool) -> Result<Option<Article>, Rejection> {
+    println!("[get_article_by_url] _url: {}", _url);
+    let result = query_as_unchecked!(
+        Article,
+        r#"SELECT id, title, url, content, created_at, updated_at, in_home FROM articles WHERE url=$1"#,
+        _url
+    )
+        .fetch_one(connection)
+        .await
+        .map_err(|_e| { anyhow::Error::new(_e) })
+        .ok();
+    Ok(result)
+}
