@@ -5,6 +5,7 @@ pub mod handlers;
 pub mod middleware;
 pub mod models;
 pub mod routes;
+mod models;
 
 const BEARER: &str = "Bearer ";
 const JWT_SECRET: &[u8] = b"secret";
