@@ -21,3 +21,13 @@ pub async fn get_article_headers_handler(_env: Environment) -> WebResult<impl Re
     let _result = service::get_article_headers(_env.db()).await?;
     Ok(warp::reply::json(&_result))
 }
+
+pub async fn create_article_handler(mut _req: Article, _env: Environment, _user: AuthUser) -> WebResult<impl Reply> {
+    _req.id = uuid::Uuid::new_v4().into();
+    if _req.in_home == None {
+        _req.in_home = Some(false);
+    }
+    let _result = service::create_article(&_req, _env.db()).await?;
+    println!("[create_article_handler] Created article '{}'", &_req.title.unwrap());
+    Ok(warp::reply::json(&json!({"status":"success", "message":"Article saved"})))
+}
