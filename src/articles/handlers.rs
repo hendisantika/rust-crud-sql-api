@@ -64,3 +64,10 @@ pub async fn get_article_comments_handler(_id: String, _env: Environment) -> Web
     println!("[get_article_comments_handler] _result={:?}", _result);
     Ok(warp::reply::json(&_result))
 }
+
+pub async fn post_comment_handler(mut _req: Comment, _env: Environment) -> WebResult<impl Reply> {
+    _req.id = uuid::Uuid::new_v4().into();
+    let _result = service::create_comment(&_req, _env.db()).await?;
+    println!("[post_comment_handler] article={}, email={}, name={}", _req.article_id, _req.email, _req.author);
+    Ok(warp::reply::json(&json!({"status":"success", "message":"Comment saved"})))
+}
