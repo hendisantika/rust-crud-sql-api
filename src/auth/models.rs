@@ -62,3 +62,9 @@ pub struct Claims {
     pub role: String,
     pub exp: usize,
 }
+
+#[derive(Clone, Deserialize, Serialize, PartialEq, Debug)]
+pub enum Role {
+    User,
+    Admin,
+}
