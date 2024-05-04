@@ -57,3 +57,18 @@ async fn authorize((role, headers): (Role, HeaderMap<HeaderValue>)) -> WebResult
         Err(e) => return Err(warp::reject::custom(AppError::from(e))),
     }
 }
+
+fn jwt_from_header(headers: &HeaderMap<HeaderValue>) -> Result<String> {
+    let header = match headers.get(warp::http::header::AUTHORIZATION) {
+        Some(v) => v,
+        None => return Err(AppError::NoAuthHeaderError),
+    };
+    let auth_header = match std::str::from_utf8(header.as_bytes()) {
+        Ok(v) => v,
+        Err(_) => return Err(AppError::NoAuthHeaderError),
+    };
+    if !auth_header.starts_with(BEARER) {
+        return Err(AppError::InvalidAuthHeaderError);
+    }
+    Ok(auth_header.trim_start_matches(BEARER).to_owned())
+}
