@@ -30,4 +30,10 @@ pub fn routes(_env: Environment) -> BoxedFilter<(impl Reply, )> {
         .and(environment::with_env(_env.clone()))
         .and(auth::middleware::with_auth(Role::Admin))
         .and_then(handlers::update_article_handler));
+
+    let delete_article_route = warp::delete().and(warp::path!("api" / "articles" / String)
+        .and(environment::with_env(_env.clone()))
+        .and(auth::middleware::with_auth(Role::Admin))
+        .and_then(handlers::delete_article_handler));
+
 }
