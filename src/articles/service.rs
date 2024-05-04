@@ -127,3 +127,22 @@ pub async fn get_comments(_id: String, connection: &PgPool) -> Result<Option<Vec
         .ok();
     Ok(result)
 }
+
+pub async fn create_comment(_comment: &Comment, connection: &PgPool) -> Result<Option<u64>, Rejection> {
+    let timestamp = Utc::now();
+    let _result = query_unchecked!(
+        r#"INSERT INTO comments (id, author, email, content, article_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)"#,
+        _comment.id,
+        _comment.author,
+        _comment.email,
+        _comment.content,
+        _comment.article_id,
+        timestamp,
+        timestamp
+    )
+        .execute(connection)
+        .await
+        .unwrap();
+
+    Ok(Some(0))
+}
