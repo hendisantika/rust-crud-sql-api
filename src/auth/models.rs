@@ -43,3 +43,15 @@ pub struct LoginResponse {
     pub roles: Vec<String>,
     pub access_token: String,
 }
+
+impl LoginResponse {
+    pub fn from_user(user: User, access_token: String) -> LoginResponse {
+        return LoginResponse {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            roles: vec!(user.role),
+            access_token,
+        };
+    }
+}
