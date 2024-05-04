@@ -50,3 +50,9 @@ pub async fn delete_article_handler(_id: String, _env: Environment, _user: AuthU
     let _result = service::delete_article(&_id, _env.db()).await?;
     Ok(warp::reply::json(&json!({"status":"success", "message":"Article deleted"})))
 }
+
+pub async fn update_home_view_handler(_id: String, _env: Environment, _user: AuthUser) -> WebResult<impl Reply> {
+    println!("[update_home_view_handler] id={}", &_id);
+    let _result = service::update_home_view(_id, _env.db()).await?;
+    Ok(warp::reply::json(&json!({"status":"success", "message":"Article updated"})))
+}
