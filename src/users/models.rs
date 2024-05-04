@@ -22,3 +22,11 @@ pub struct UserCreateRequest {
     pub password: String,
     pub role: Option<Role>,
 }
+
+#[derive(Deserialize)]
+pub struct UserUpdateRequest {
+    pub id: uuid::Uuid,
+    pub email: String,
+    pub name: String,
+    pub role: String,
+}
