@@ -74,3 +74,18 @@ pub async fn create_user(_req: UserCreateRequest, connection: &PgPool) -> Result
 
     return result;
 }
+
+pub async fn update_user(_req: UserUpdateRequest, connection: &PgPool) -> Option<Rejection> {
+    query_unchecked!(
+        r#"UPDATE users SET email=$1, name=$2, role=$3, updated_at=$4 WHERE id=$5"#,
+        _req.email,
+        _req.name,
+        _req.role,
+        Utc::now(),
+        _req.id
+    )
+        .execute(connection)
+        .await
+        .unwrap();
+    None
+}
