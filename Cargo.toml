@@ -19,7 +19,7 @@ chrono = { version = "0.4.19", features = ["serde"] }
 uuid = { version = "1.8.0", features = ["serde", "v4"] }
 anyhow = "1.0.36"
 thiserror = "1.0.22"
-sqlx = { version = "0.7.4", default-features = false, features = ["runtime-tokio-rustls", "macros", "postgres", "uuid", "chrono", "json", "offline"] }
+sqlx = { version = "0.7.4", default-features = false, features = ["runtime-tokio-rustls", "macros", "postgres", "uuid", "chrono", "json"] }
 http = "1.1.0"
 
 [[bin]]
