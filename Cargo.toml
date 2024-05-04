@@ -10,15 +10,16 @@ authors = ["Hendi Santika<hendisantika@yahoo.co.id>"]
 tokio = { version = "1.37.0", features = ["full"] }
 warp = "0.3.7"
 dotenv = "0.15.0"
-clap = "4.5.4"
-serde = { version = "1.0.118", features = ["derive"] }
-serde_json = "1.0.60"
+#clap = "4.5.4"
+clap = { version = "4.5.4", features = ["derive"] }
+serde = { version = "1.0.200", features = ["derive"] }
+serde_json = "1.0.116"
 jsonwebtoken = "9.3.0"
 argonautica = "0.2.0"
-chrono = { version = "0.4.19", features = ["serde"] }
+chrono = { version = "0.4.38", features = ["serde"] }
 uuid = { version = "1.8.0", features = ["serde", "v4"] }
-anyhow = "1.0.36"
-thiserror = "1.0.22"
+anyhow = "1.0.82"
+thiserror = "1.0.59"
 sqlx = { version = "0.7.4", default-features = false, features = ["runtime-tokio-rustls", "macros", "postgres", "uuid", "chrono", "json"] }
 http = "1.1.0"
 
