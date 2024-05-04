@@ -101,3 +101,16 @@ pub async fn delete_article(_id: &str, connection: &PgPool) -> Result<Option<u64
         .unwrap();
     Ok(Some(0))
 }
+
+pub async fn update_home_view(_id: String, connection: &PgPool) -> Result<Option<u64>, Rejection> {
+    let uuid = uuid::Uuid::parse_str(&_id).unwrap();
+    query_unchecked!(
+        r#"UPDATE articles SET in_home=(SELECT NOT in_home FROM articles WHERE id=$1) WHERE id=$2"#,
+        uuid,
+        uuid
+    )
+        .execute(connection)
+        .await
+        .unwrap();
+    Ok(Some(0))
+}
