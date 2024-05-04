@@ -10,4 +10,8 @@ pub fn routes(_env: Environment) -> BoxedFilter<(impl Reply, )> {
     let get_home_article_headers_route = warp::get().and(warp::path!("api" / "articles_home")
         .and(environment::with_env(_env.clone()))
         .and_then(handlers::get_home_article_headers_handler));
+
+    let get_article_headers_route = warp::get().and(warp::path!("api" / "articles")
+        .and(environment::with_env(_env.clone()))
+        .and_then(handlers::get_article_headers_handler));
 }
