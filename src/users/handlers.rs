@@ -50,3 +50,10 @@ pub async fn user_create_handler(mut _req: UserCreateRequest, _env: Environment,
         }
     }
 }
+
+// Updates user
+pub async fn user_update_handler(_req: UserUpdateRequest, _env: Environment, _user: AuthUser) -> WebResult<impl Reply> {
+    println!("[user_update_handler][{}] Updating user {}", _user, &_req.email);
+    service::update_user(_req, _env.db()).await.map(|_e| UserError::UpdateError);
+    Ok(warp::reply::json(&json!({"status":"success", "message":"User updated"})))
+}
