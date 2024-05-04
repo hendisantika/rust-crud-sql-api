@@ -1,9 +1,11 @@
+use std::convert::Infallible;
 use std::net::SocketAddr;
 
-use argon::Argon;
 use clap::Clap;
 use sqlx::postgres::PgPool;
 use warp::Filter;
+
+use argon::Argon;
 
 mod argon;
 

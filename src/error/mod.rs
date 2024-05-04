@@ -2,8 +2,6 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 pub mod handlers;
-mod handlers;
-
 #[derive(Error, Debug)]
 pub enum AuthError {
     #[error("invalid credentials")]
