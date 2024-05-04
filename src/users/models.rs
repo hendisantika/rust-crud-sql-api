@@ -30,3 +30,10 @@ pub struct UserUpdateRequest {
     pub name: String,
     pub role: String,
 }
+
+#[derive(Deserialize)]
+pub struct PasswordUpdateRequest {
+    pub id: uuid::Uuid,
+    pub current_password: String,
+    pub new_password: String,
+}
