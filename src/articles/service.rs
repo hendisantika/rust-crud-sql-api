@@ -32,3 +32,15 @@ pub async fn get_article_by_url(_url: String, connection: &PgPool) -> Result<Opt
         .ok();
     Ok(result)
 }
+
+pub async fn get_home_article_headers(connection: &PgPool) -> Result<Option<Vec<Article>>, Rejection> {
+    let result = query_as_unchecked!(
+        Article,
+        r#"SELECT id, title, url, '' as content, created_at, updated_at, in_home FROM articles WHERE in_home=true"#
+    )
+        .fetch_all(connection)
+        .await
+        .map_err(|_e| { anyhow::Error::new(_e) })
+        .ok();
+    Ok(result)
+}
