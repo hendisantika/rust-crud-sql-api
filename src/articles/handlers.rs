@@ -11,3 +11,8 @@ pub async fn get_article_by_url_handler(_url: String, _env: Environment) -> WebR
     let _result = service::get_article_by_url(_url, _env.db()).await?;
     Ok(warp::reply::json(&_result))
 }
+
+pub async fn get_home_article_headers_handler(_env: Environment) -> WebResult<impl Reply> {
+    let _result = service::get_home_article_headers(_env.db()).await?;
+    Ok(warp::reply::json(&_result))
+}
