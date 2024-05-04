@@ -30,3 +30,15 @@ pub enum AppError {
 }
 
 impl warp::reject::Reject for AppError {}
+
+impl From<sqlx::error::Error> for AppError {
+    fn from(_err: sqlx::error::Error) -> Self {
+        AppError::WrongCredentialsError
+    }
+}
+
+#[derive(Serialize, Debug)]
+struct ErrorResponse {
+    message: String,
+    status: String,
+}
