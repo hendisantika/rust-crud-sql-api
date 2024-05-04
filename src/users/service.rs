@@ -35,3 +35,15 @@ pub async fn get_user_by_email(email: &str, connection: &PgPool) -> Result<Optio
         .ok();
     Ok(user)
 }
+
+pub async fn get_users(connection: &PgPool) -> Result<Option<Vec<User>>, Rejection> {
+    let result = query_as_unchecked!(
+        User,
+        r#"SELECT id, email, name, password, role, created_at, updated_at FROM users"#
+    )
+        .fetch_all(connection)
+        .await
+        .map_err(|_e| { anyhow::Error::new(_e) })
+        .ok();
+    Ok(result)
+}
