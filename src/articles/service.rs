@@ -73,3 +73,19 @@ pub async fn create_article(_article: &Article, connection: &PgPool) -> Result<O
 
     Ok(Some(0))
 }
+
+pub async fn update_article(_article: &Article, connection: &PgPool) -> Result<Option<u64>, Rejection> {
+    query_unchecked!(
+        r#"UPDATE articles SET title=$1, url=$2, content=$3, updated_at=$4, in_home=$5 WHERE id=$6"#,
+        _article.title,
+        _article.url,
+        _article.content,
+        _article.updated_at,
+        _article.in_home,
+        _article.id
+    )
+        .execute(connection)
+        .await
+        .unwrap();
+    Ok(Some(0))
+}
