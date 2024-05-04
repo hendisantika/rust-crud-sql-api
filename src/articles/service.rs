@@ -56,3 +56,20 @@ pub async fn get_article_headers(connection: &PgPool) -> Result<Option<Vec<Artic
         .ok();
     Ok(result)
 }
+
+pub async fn create_article(_article: &Article, connection: &PgPool) -> Result<Option<u64>, Rejection> {
+    let _result = query_unchecked!(
+        r#"INSERT INTO articles (id, title, url, content, created_at, in_home) VALUES ($1, $2, $3, $4, $5, $6)"#,
+        _article.id,
+        _article.title,
+        _article.url,
+        _article.content,
+        Utc::now(),
+        _article.in_home
+    )
+        .execute(connection)
+        .await
+        .unwrap();
+
+    Ok(Some(0))
+}
