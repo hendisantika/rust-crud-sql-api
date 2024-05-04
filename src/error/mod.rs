@@ -51,4 +51,17 @@ pub enum UserError {
     UpdateError,
 }
 
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub struct DatabaseError {
+    pub message: String,
+}
+
+impl std::fmt::Display for DatabaseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            _ => write!(f, "Database error"),
+        }
+    }
+}
+
 impl warp::reject::Reject for UserError {}
