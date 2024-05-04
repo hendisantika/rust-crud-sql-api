@@ -49,4 +49,16 @@ pub fn routes(_env: Environment) -> BoxedFilter<(impl Reply, )> {
         .and(warp::body::json())
         .and(environment::with_env(_env.clone()))
         .and_then(handlers::post_comment_handler));
+
+    let routes = get_home_article_headers_route
+        .or(get_article_headers_route)
+        .or(get_article_route)
+        .or(create_article_route)
+        .or(update_article_route)
+        .or(delete_article_route)
+        .or(update_home_view_route)
+        .or(get_comments_route)
+        .or(post_comment_route);
+
+    routes.boxed()
 }
