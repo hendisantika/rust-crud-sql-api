@@ -42,3 +42,13 @@ struct ErrorResponse {
     message: String,
     status: String,
 }
+
+#[derive(Error, Debug)]
+pub enum UserError {
+    #[error("could not create user")]
+    CreateError,
+    #[error("could not update user")]
+    UpdateError,
+}
+
+impl warp::reject::Reject for UserError {}
