@@ -89,3 +89,16 @@ pub async fn update_user(_req: UserUpdateRequest, connection: &PgPool) -> Option
         .unwrap();
     None
 }
+
+pub async fn update_user_password(_req: User, connection: &PgPool) -> Option<Rejection> {
+    query_unchecked!(
+        r#"UPDATE users SET password=$1, updated_at=$2 WHERE id=$3"#,
+        _req.password,
+        Utc::now(),
+        _req.id
+    )
+        .execute(connection)
+        .await
+        .unwrap();
+    None
+}
