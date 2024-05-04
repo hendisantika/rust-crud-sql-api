@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 use argon::Argon;
 use clap::Clap;
 use sqlx::postgres::PgPool;
@@ -36,4 +38,34 @@ pub struct Args {
 
     #[clap(default_value = "0.0.0.0:8080", env)]
     pub host: SocketAddr,
+}
+
+impl Environment {
+    pub async fn new() -> anyhow::Result<Self> {
+        let args = Args::parse();
+        let Args {
+            database_url,
+            ..
+        } = &args;
+
+        let db_pool = PgPool::connect(database_url).await?;
+        let argon = Argon::new(&args);
+        Ok(Self {
+            db_pool,
+            config: args,
+            argon,
+        })
+    }
+
+    pub fn db(&self) -> &PgPool {
+        &self.db_pool
+    }
+
+    pub fn config(&self) -> &Args { &self.config }
+
+    pub fn argon(&self) -> &Argon { &self.argon }
+}
+
+pub fn with_env(env: Environment) -> impl Filter<Extract=(Environment, ), Error=Infallible> + Clone {
+    warp::any().map(move || env.clone())
 }
