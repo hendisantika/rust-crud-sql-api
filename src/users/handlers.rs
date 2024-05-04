@@ -57,3 +57,38 @@ pub async fn user_update_handler(_req: UserUpdateRequest, _env: Environment, _us
     service::update_user(_req, _env.db()).await.map(|_e| UserError::UpdateError);
     Ok(warp::reply::json(&json!({"status":"success", "message":"User updated"})))
 }
+
+// Changes own or other's password if admin
+pub async fn password_update_handler(mut _req: PasswordUpdateRequest, _env: Environment, _user: AuthUser) -> WebResult<impl Reply> {
+    // Reject non-admins changing passwords of other users
+    if _user.role != Role::Admin && _user.id != _req.id.to_string() {
+        return Err(warp::reject::custom(UserError::UpdateError));
+    }
+
+    let result = service::get_user_by_id(_req.id, _env.db()).await?;
+    let mut user = match result {
+        Some(_) => result.unwrap(),
+        None => return Err(warp::reject::custom(UserError::UpdateError)),
+    };
+
+    println!("[password_update_handler] Action performed by {} on {}", _user.id, user.id);
+    // current_password is required for users/admins to change their own passwords, but allow admins change others'
+    if (_user.id != user.id.to_string() && _user.role != Role::Admin) || _user.id == user.id.to_string() {
+        let is_valid = _env
+            .argon()
+            .verifier()
+            .with_hash(&user.password)
+            .with_password(&_req.current_password)
+            .verify()
+            .or(Err(warp::reject::custom(UserError::UpdateError)))?;
+
+        if !is_valid {
+            return Err(warp::reject::custom(AuthError::InvalidCredentials));
+        }
+    }
+
+    let hash = _env.argon().hasher().with_password(&_req.new_password).hash().unwrap();
+    user.password = hash;
+    service::update_user_password(user, _env.db()).await.map(|_e| UserError::UpdateError);
+    Ok(warp::reply::json(&json!({"status":"success", "message":"Password updated"})))
+}
