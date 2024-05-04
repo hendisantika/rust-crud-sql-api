@@ -14,3 +14,11 @@ pub struct User {
     pub created_at: DateTime<Utc>,
     pub updated_at: Option<DateTime<Utc>>,
 }
+
+#[derive(Deserialize)]
+pub struct UserCreateRequest {
+    pub email: String,
+    pub name: String,
+    pub password: String,
+    pub role: Option<Role>,
+}
