@@ -56,3 +56,11 @@ pub async fn update_home_view_handler(_id: String, _env: Environment, _user: Aut
     let _result = service::update_home_view(_id, _env.db()).await?;
     Ok(warp::reply::json(&json!({"status":"success", "message":"Article updated"})))
 }
+
+// Comments
+
+pub async fn get_article_comments_handler(_id: String, _env: Environment) -> WebResult<impl Reply> {
+    let _result = service::get_comments(_id, _env.db()).await?;
+    println!("[get_article_comments_handler] _result={:?}", _result);
+    Ok(warp::reply::json(&_result))
+}
