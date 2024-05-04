@@ -55,3 +55,10 @@ impl LoginResponse {
         };
     }
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Claims {
+    pub sub: String,
+    pub role: String,
+    pub exp: usize,
+}
