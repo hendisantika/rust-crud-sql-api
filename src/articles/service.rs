@@ -89,3 +89,15 @@ pub async fn update_article(_article: &Article, connection: &PgPool) -> Result<O
         .unwrap();
     Ok(Some(0))
 }
+
+pub async fn delete_article(_id: &str, connection: &PgPool) -> Result<Option<u64>, Rejection> {
+    query_as_unchecked!(
+        Article,
+        r#"DELETE FROM articles WHERE id=$1"#,
+        uuid::Uuid::parse_str(&_id).unwrap()
+    )
+        .execute(connection)
+        .await
+        .unwrap();
+    Ok(Some(0))
+}
