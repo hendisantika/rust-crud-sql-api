@@ -18,4 +18,11 @@ pub fn routes(_env: Environment) -> BoxedFilter<(impl Reply, )> {
     let get_article_route = warp::get().and(warp::path!("api" / "articles" / String)
         .and(environment::with_env(_env.clone()))
         .and_then(handlers::get_article_by_url_handler));
+
+    let create_article_route = warp::post().and(warp::path!("api" / "articles")
+        .and(warp::body::json())
+        .and(environment::with_env(_env.clone()))
+        .and(auth::middleware::with_auth(Role::Admin))
+        .and_then(handlers::create_article_handler));
+
 }
