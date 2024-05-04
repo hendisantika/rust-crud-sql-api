@@ -30,3 +30,10 @@ async fn authorize_any(headers: HeaderMap<HeaderValue>) -> WebResult<AuthUser> {
         Err(e) => return Err(warp::reject::custom(AppError::from(e))),
     }
 }
+
+// with_auth and authorize handles authorization of specific roles
+pub fn with_auth(role: Role) -> impl Filter<Extract=(AuthUser, ), Error=warp::reject::Rejection> + Clone {
+    warp::header::headers_cloned()
+        .map(move |headers: HeaderMap<HeaderValue>| (role.clone(), headers))
+        .and_then(authorize)
+}
