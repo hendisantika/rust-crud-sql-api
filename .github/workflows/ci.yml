@@ -70,6 +70,60 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
+  sqlx-check:
+    name: sqlx Query Cache
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16.2-alpine3.19
+        env:
+          POSTGRES_USER: demo
+          POSTGRES_PASSWORD: demo
+          POSTGRES_DB: demo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U demo -d demo"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # this job re-derives the query metadata against a live database,
+      # so it must not read the committed cache
+      SQLX_OFFLINE: false
+      DATABASE_URL: postgres://demo:demo@localhost:5432/demo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang llvm libclang-dev pkg-config libssl-dev postgresql-client
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry & build artifacts
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install sqlx-cli
+        run: |
+          if ! command -v sqlx >/dev/null 2>&1; then
+            cargo install sqlx-cli --version '^0.7' --no-default-features --features postgres,rustls --locked
+          fi
+
+      - name: Load database schema
+        run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/initial.sql
+
+      - name: Verify .sqlx cache is up to date
+        run: |
+          cargo sqlx prepare --check -- --bin rust-crud-sql \
+            || { echo "::error::.sqlx is stale. Run 'cargo sqlx prepare -- --bin rust-crud-sql' and commit the result."; exit 1; }
+
   docker:
     name: Docker Build
     runs-on: ubuntu-latest
