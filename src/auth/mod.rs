@@ -22,6 +22,10 @@ pub fn create_jwt(uid: &str, role: &Role) -> Result<String> {
         exp: expiration as usize,
     };
     let header = jsonwebtoken::Header::new(jsonwebtoken::Algorithm::HS512);
-    jsonwebtoken::encode(&header, &claims, &jsonwebtoken::EncodingKey::from_secret(JWT_SECRET))
-        .map_err(|_| AppError::JWTTokenCreationError)
+    jsonwebtoken::encode(
+        &header,
+        &claims,
+        &jsonwebtoken::EncodingKey::from_secret(JWT_SECRET),
+    )
+    .map_err(|_| AppError::JWTTokenCreationError)
 }

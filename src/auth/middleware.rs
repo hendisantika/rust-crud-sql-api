@@ -1,13 +1,14 @@
-use warp::Filter;
 use warp::http::{HeaderMap, HeaderValue};
+use warp::Filter;
 
-use crate::{Result, WebResult};
-use crate::auth::{BEARER, JWT_SECRET};
 use crate::auth::models::{AuthUser, Claims, Role};
+use crate::auth::{BEARER, JWT_SECRET};
 use crate::error::AppError;
+use crate::{Result, WebResult};
 
 // Authentication middleware
-pub fn authenticated() -> impl Filter<Extract=(AuthUser, ), Error=warp::reject::Rejection> + Clone {
+pub fn authenticated() -> impl Filter<Extract = (AuthUser,), Error = warp::reject::Rejection> + Clone
+{
     warp::header::headers_cloned()
         .map(move |headers: HeaderMap<HeaderValue>| headers)
         .and_then(authorize_any)
@@ -22,7 +23,7 @@ async fn authorize_any(headers: HeaderMap<HeaderValue>) -> WebResult<AuthUser> {
                 &jsonwebtoken::DecodingKey::from_secret(JWT_SECRET),
                 &jsonwebtoken::Validation::new(jsonwebtoken::Algorithm::HS512),
             )
-                .map_err(|_| warp::reject::custom(AppError::JWTTokenError))?;
+            .map_err(|_| warp::reject::custom(AppError::JWTTokenError))?;
 
             let user = AuthUser::new(decoded.claims.sub, decoded.claims.role);
             Ok(user)
@@ -32,7 +33,9 @@ async fn authorize_any(headers: HeaderMap<HeaderValue>) -> WebResult<AuthUser> {
 }
 
 // with_auth and authorize handles authorization of specific roles
-pub fn with_auth(role: Role) -> impl Filter<Extract=(AuthUser, ), Error=warp::reject::Rejection> + Clone {
+pub fn with_auth(
+    role: Role,
+) -> impl Filter<Extract = (AuthUser,), Error = warp::reject::Rejection> + Clone {
     warp::header::headers_cloned()
         .map(move |headers: HeaderMap<HeaderValue>| (role.clone(), headers))
         .and_then(authorize)
@@ -46,7 +49,7 @@ async fn authorize((role, headers): (Role, HeaderMap<HeaderValue>)) -> WebResult
                 &jsonwebtoken::DecodingKey::from_secret(JWT_SECRET),
                 &jsonwebtoken::Validation::new(jsonwebtoken::Algorithm::HS512),
             )
-                .map_err(|_| warp::reject::custom(AppError::JWTTokenError))?;
+            .map_err(|_| warp::reject::custom(AppError::JWTTokenError))?;
 
             if role == Role::Admin && Role::from_str(&decoded.claims.role) != Role::Admin {
                 return Err(warp::reject::custom(AppError::NoPermissionError));

@@ -2,11 +2,11 @@ use warp::Filter;
 
 use crate::environment::Environment;
 
+mod articles;
 mod auth;
 mod environment;
 mod error;
 mod users;
-mod articles;
 
 type Result<T> = std::result::Result<T, error::AppError>;
 type WebResult<T> = std::result::Result<T, warp::reject::Rejection>;

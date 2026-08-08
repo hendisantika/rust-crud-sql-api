@@ -20,9 +20,9 @@ pub struct Environment {
 // #[derive(Clone, Clap, Debug)]
 #[derive(Clone, Debug, Parser)]
 #[clap(
-name = "demo-api",
-rename_all = "kebab-case",
-rename_all_env = "screaming-snake"
+    name = "demo-api",
+    rename_all = "kebab-case",
+    rename_all_env = "screaming-snake"
 )]
 pub struct Args {
     #[clap(short, long)]
@@ -47,10 +47,7 @@ pub struct Args {
 impl Environment {
     pub async fn new() -> anyhow::Result<Self> {
         let args = Args::parse();
-        let Args {
-            database_url,
-            ..
-        } = &args;
+        let Args { database_url, .. } = &args;
 
         let db_pool = PgPool::connect(database_url).await?;
         let argon = Argon::new(&args);
@@ -65,11 +62,17 @@ impl Environment {
         &self.db_pool
     }
 
-    pub fn config(&self) -> &Args { &self.config }
+    pub fn config(&self) -> &Args {
+        &self.config
+    }
 
-    pub fn argon(&self) -> &Argon { &self.argon }
+    pub fn argon(&self) -> &Argon {
+        &self.argon
+    }
 }
 
-pub fn with_env(env: Environment) -> impl Filter<Extract=(Environment, ), Error=Infallible> + Clone {
+pub fn with_env(
+    env: Environment,
+) -> impl Filter<Extract = (Environment,), Error = Infallible> + Clone {
     warp::any().map(move || env.clone())
 }

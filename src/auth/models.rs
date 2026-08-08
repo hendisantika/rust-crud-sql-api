@@ -24,7 +24,7 @@ impl AuthUser {
 impl std::fmt::Display for AuthUser {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            _ => write!(f, "{}", &self.id)
+            _ => write!(f, "{}", &self.id),
         }
     }
 }
@@ -50,7 +50,7 @@ impl LoginResponse {
             id: user.id,
             email: user.email,
             name: user.name,
-            roles: vec!(user.role),
+            roles: vec![user.role],
             access_token,
         };
     }

@@ -1,11 +1,11 @@
-use warp::{Filter, Reply};
 use warp::filters::BoxedFilter;
+use warp::{Filter, Reply};
 
 use crate::auth::handlers;
 use crate::environment;
 use crate::environment::Environment;
 
-pub fn routes(_env: Environment) -> BoxedFilter<(impl Reply, )> {
+pub fn routes(_env: Environment) -> BoxedFilter<(impl Reply,)> {
     let login_route = warp::path!("api" / "auth" / "login")
         .and(warp::post())
         .and(warp::body::json())
