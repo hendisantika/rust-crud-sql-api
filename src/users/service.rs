@@ -49,7 +49,7 @@ pub async fn get_users(connection: &PgPool) -> Result<Option<Vec<User>>, Rejecti
     )
     .fetch_all(connection)
     .await
-    .map_err(|_e| anyhow::Error::new(_e))
+    .map_err(anyhow::Error::new)
     .ok();
     Ok(result)
 }
@@ -71,17 +71,17 @@ pub async fn create_user(
         .await
         .map(|_| 0)
         .map_err(|_e| {
-            let _reply = match _e.as_database_error() {
+            match _e.as_database_error() {
                 None => println!("ERR"),
                 Some(err) => {
                     println!("ERR {:?}", err.message().to_string());
                     return DatabaseError { message: err.message().to_string() };
                 }
             };
-            return DatabaseError { message: String::from("test") };
+            DatabaseError { message: String::from("test") }
         });
 
-    return result;
+    result
 }
 
 pub async fn update_user(_req: UserUpdateRequest, connection: &PgPool) -> Option<Rejection> {

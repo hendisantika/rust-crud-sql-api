@@ -15,24 +15,24 @@ impl warp::reject::Reject for AuthError {}
 #[derive(Error, Debug, Serialize)]
 pub enum AppError {
     #[error("wrong credentials")]
-    WrongCredentialsError,
+    WrongCredentials,
     #[error("jwt token not valid")]
-    JWTTokenError,
+    InvalidJWTToken,
     #[error("jwt token creation failed")]
-    JWTTokenCreationError,
+    JWTTokenCreationFailed,
     #[error("no auth header")]
-    NoAuthHeaderError,
+    NoAuthHeader,
     #[error("invalid auth header")]
-    InvalidAuthHeaderError,
+    InvalidAuthHeader,
     #[error("no permission")]
-    NoPermissionError,
+    NoPermission,
 }
 
 impl warp::reject::Reject for AppError {}
 
 impl From<sqlx::error::Error> for AppError {
     fn from(_err: sqlx::error::Error) -> Self {
-        AppError::WrongCredentialsError
+        AppError::WrongCredentials
     }
 }
 
@@ -57,9 +57,7 @@ pub struct DatabaseError {
 
 impl std::fmt::Display for DatabaseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            _ => write!(f, "Database error"),
-        }
+        write!(f, "Database error")
     }
 }
 

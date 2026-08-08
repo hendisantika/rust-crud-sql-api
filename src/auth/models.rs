@@ -14,7 +14,7 @@ pub struct AuthUser {
 impl AuthUser {
     pub fn new(id: String, role: String) -> AuthUser {
         AuthUser {
-            id: id,
+            id,
             role: Role::from_str(&role),
             login_at: Utc::now(),
         }
@@ -23,9 +23,7 @@ impl AuthUser {
 
 impl std::fmt::Display for AuthUser {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            _ => write!(f, "{}", &self.id),
-        }
+        write!(f, "{}", self.id)
     }
 }
 
@@ -46,13 +44,13 @@ pub struct LoginResponse {
 
 impl LoginResponse {
     pub fn from_user(user: User, access_token: String) -> LoginResponse {
-        return LoginResponse {
+        LoginResponse {
             id: user.id,
             email: user.email,
             name: user.name,
             roles: vec![user.role],
             access_token,
-        };
+        }
     }
 }
 

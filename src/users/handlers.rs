@@ -26,7 +26,7 @@ pub async fn get_user_by_id_handler(
     println!(
         "[get_user_by_id_handler] id={}, email={}",
         _id,
-        &_result.clone().unwrap().email
+        _result.clone().unwrap().email
     );
     Ok(warp::reply::json(&_result))
 }
@@ -42,7 +42,7 @@ pub async fn user_create_handler(
         Ok(existing) => {
             println!(
                 "[user_create_handler] User {} already exists",
-                &existing.unwrap().email
+                existing.unwrap().email
             );
             return Ok(warp::reply::json(
                 &json!({"status":"error", "message":"Unable to create user, email already registered"}),
@@ -65,16 +65,16 @@ pub async fn user_create_handler(
         Err(e) => {
             println!(
                 "[user_create_handler] Error creating user {}: {:?}",
-                &email, e.message
+                email, e.message
             );
-            return Err(warp::reject::custom(UserError::CreateError));
+            Err(warp::reject::custom(UserError::CreateError))
         }
         _ => {
             println!(
                 "[user_create_handler] User creation successful: {:?}",
-                &email
+                email
             );
-            return Ok(warp::reply::json(&json!({"status": "success"})));
+            Ok(warp::reply::json(&json!({"status": "success"})))
         }
     }
 }
@@ -87,7 +87,7 @@ pub async fn user_update_handler(
 ) -> WebResult<impl Reply> {
     println!(
         "[user_update_handler][{}] Updating user {}",
-        _user, &_req.email
+        _user, _req.email
     );
     service::update_user(_req, _env.db())
         .await

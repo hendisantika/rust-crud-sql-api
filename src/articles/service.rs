@@ -60,7 +60,7 @@ pub async fn get_article_headers(connection: &PgPool) -> Result<Option<Vec<Artic
     )
     .fetch_all(connection)
     .await
-    .map_err(|_e| anyhow::Error::new(_e))
+    .map_err(anyhow::Error::new)
     .ok();
     Ok(result)
 }

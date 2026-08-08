@@ -23,12 +23,12 @@ async fn authorize_any(headers: HeaderMap<HeaderValue>) -> WebResult<AuthUser> {
                 &jsonwebtoken::DecodingKey::from_secret(JWT_SECRET),
                 &jsonwebtoken::Validation::new(jsonwebtoken::Algorithm::HS512),
             )
-            .map_err(|_| warp::reject::custom(AppError::JWTTokenError))?;
+            .map_err(|_| warp::reject::custom(AppError::InvalidJWTToken))?;
 
             let user = AuthUser::new(decoded.claims.sub, decoded.claims.role);
             Ok(user)
         }
-        Err(e) => return Err(warp::reject::custom(AppError::from(e))),
+        Err(e) => Err(warp::reject::custom(e)),
     }
 }
 
@@ -49,29 +49,29 @@ async fn authorize((role, headers): (Role, HeaderMap<HeaderValue>)) -> WebResult
                 &jsonwebtoken::DecodingKey::from_secret(JWT_SECRET),
                 &jsonwebtoken::Validation::new(jsonwebtoken::Algorithm::HS512),
             )
-            .map_err(|_| warp::reject::custom(AppError::JWTTokenError))?;
+            .map_err(|_| warp::reject::custom(AppError::InvalidJWTToken))?;
 
             if role == Role::Admin && Role::from_str(&decoded.claims.role) != Role::Admin {
-                return Err(warp::reject::custom(AppError::NoPermissionError));
+                return Err(warp::reject::custom(AppError::NoPermission));
             }
             let user = AuthUser::new(decoded.claims.sub, decoded.claims.role);
             Ok(user)
         }
-        Err(e) => return Err(warp::reject::custom(AppError::from(e))),
+        Err(e) => Err(warp::reject::custom(e)),
     }
 }
 
 fn jwt_from_header(headers: &HeaderMap<HeaderValue>) -> Result<String> {
     let header = match headers.get(warp::http::header::AUTHORIZATION) {
         Some(v) => v,
-        None => return Err(AppError::NoAuthHeaderError),
+        None => return Err(AppError::NoAuthHeader),
     };
     let auth_header = match std::str::from_utf8(header.as_bytes()) {
         Ok(v) => v,
-        Err(_) => return Err(AppError::NoAuthHeaderError),
+        Err(_) => return Err(AppError::NoAuthHeader),
     };
     if !auth_header.starts_with(BEARER) {
-        return Err(AppError::InvalidAuthHeaderError);
+        return Err(AppError::InvalidAuthHeader);
     }
     Ok(auth_header.trim_start_matches(BEARER).to_owned())
 }

@@ -17,10 +17,10 @@ pub async fn error_handler(
         }
     } else if let Some(e) = err.find::<AppError>() {
         match e {
-            AppError::WrongCredentialsError => (StatusCode::FORBIDDEN, e.to_string()),
-            AppError::NoPermissionError => (StatusCode::UNAUTHORIZED, e.to_string()),
-            AppError::JWTTokenError => (StatusCode::UNAUTHORIZED, e.to_string()),
-            AppError::JWTTokenCreationError => (
+            AppError::WrongCredentials => (StatusCode::FORBIDDEN, e.to_string()),
+            AppError::NoPermission => (StatusCode::UNAUTHORIZED, e.to_string()),
+            AppError::InvalidJWTToken => (StatusCode::UNAUTHORIZED, e.to_string()),
+            AppError::JWTTokenCreationFailed => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Internal Server Error".to_string(),
             ),

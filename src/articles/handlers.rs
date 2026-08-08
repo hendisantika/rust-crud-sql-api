@@ -28,13 +28,13 @@ pub async fn create_article_handler(
     _user: AuthUser,
 ) -> WebResult<impl Reply> {
     _req.id = uuid::Uuid::new_v4().into();
-    if _req.in_home == None {
+    if _req.in_home.is_none() {
         _req.in_home = Some(false);
     }
     let _result = service::create_article(&_req, _env.db()).await?;
     println!(
         "[create_article_handler] Created article '{}'",
-        &_req.title.unwrap()
+        _req.title.unwrap()
     );
     Ok(warp::reply::json(
         &json!({"status":"success", "message":"Article saved"}),
@@ -58,8 +58,8 @@ pub async fn update_article_handler(
     let _result = service::update_article(&original, _env.db()).await?;
     println!(
         "[update_article_handler] id={}, title={}",
-        &original.id.unwrap(),
-        &original.title.unwrap()
+        original.id.unwrap(),
+        original.title.unwrap()
     );
     Ok(warp::reply::json(
         &json!({"status":"success", "message":"Article updated"}),
@@ -83,7 +83,7 @@ pub async fn update_home_view_handler(
     _env: Environment,
     _user: AuthUser,
 ) -> WebResult<impl Reply> {
-    println!("[update_home_view_handler] id={}", &_id);
+    println!("[update_home_view_handler] id={}", _id);
     let _result = service::update_home_view(_id, _env.db()).await?;
     Ok(warp::reply::json(
         &json!({"status":"success", "message":"Article updated"}),
@@ -99,7 +99,7 @@ pub async fn get_article_comments_handler(_id: String, _env: Environment) -> Web
 }
 
 pub async fn post_comment_handler(mut _req: Comment, _env: Environment) -> WebResult<impl Reply> {
-    _req.id = uuid::Uuid::new_v4().into();
+    _req.id = uuid::Uuid::new_v4();
     let _result = service::create_comment(&_req, _env.db()).await?;
     println!(
         "[post_comment_handler] article={}, email={}, name={}",

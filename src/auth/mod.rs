@@ -27,5 +27,5 @@ pub fn create_jwt(uid: &str, role: &Role) -> Result<String> {
         &claims,
         &jsonwebtoken::EncodingKey::from_secret(JWT_SECRET),
     )
-    .map_err(|_| AppError::JWTTokenCreationError)
+    .map_err(|_| AppError::JWTTokenCreationFailed)
 }
