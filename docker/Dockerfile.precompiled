@@ -1,5 +1,30 @@
-FROM rust as planner
+# Fast-path image that ships an already-compiled Linux binary, skipping the
+# full cargo build in the root Dockerfile. Useful when CI has produced the
+# binary as an artifact.
+#
+# The binary must be a Linux glibc build matching the image architecture:
+#
+#   mkdir -p bin
+#   cargo build --release --target x86_64-unknown-linux-gnu
+#   cp target/x86_64-unknown-linux-gnu/release/rust-crud-sql bin/
+#   docker build -f docker/Dockerfile.precompiled -t rust-crud-sql-api:precompiled .
+#
+# Build from the project root so `bin/` is inside the build context.
+FROM debian:bookworm-slim AS runtime
+LABEL authors="hendisantika"
+
+ARG BIN_PATH=bin/rust-crud-sql
+
 WORKDIR /app
-COPY bin/rust-crud-sql-api .
-COPY .env .
-CMD ["/app/rust-crud-sql-api"]
+ENV TZ=Asia/Jakarta
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates tzdata \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configuration comes from the environment at run time (see .env / compose),
+# so no secrets are baked into the image.
+COPY ${BIN_PATH} /usr/local/bin/rust-crud-sql
+
+EXPOSE 8000
+CMD ["rust-crud-sql"]
