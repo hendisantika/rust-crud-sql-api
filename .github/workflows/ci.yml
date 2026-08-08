@@ -10,6 +10,8 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
+  # queries are resolved from the committed .sqlx cache, so no database is needed
+  SQLX_OFFLINE: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -69,3 +71,29 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
         continue-on-error: true
+
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: rust-crud-sql-api:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test image
+        run: docker run --rm rust-crud-sql-api:${{ github.sha }} rust-crud-sql --help
