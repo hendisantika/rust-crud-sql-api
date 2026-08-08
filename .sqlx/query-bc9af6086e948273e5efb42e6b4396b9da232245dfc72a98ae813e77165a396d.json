@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE articles SET in_home=(SELECT NOT in_home FROM articles WHERE id=$1) WHERE id=$2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "bc9af6086e948273e5efb42e6b4396b9da232245dfc72a98ae813e77165a396d"
+}
