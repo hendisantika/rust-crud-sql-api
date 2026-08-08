@@ -1,31 +1,35 @@
-FROM rust as planner
+# ---- base image with the toolchain and native build deps --------------------
+FROM rust:1-slim-bookworm AS chef
 LABEL authors="hendisantika"
-WORKDIR app
-RUN cargo install cargo-chef
-COPY docker .
+WORKDIR /app
+# argonautica builds libargon2 from C sources and needs clang/bindgen
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential pkg-config libssl-dev clang llvm-dev libclang-dev \
+    && rm -rf /var/lib/apt/lists/*
+RUN cargo install cargo-chef --locked
+
+# ---- work out the dependency graph -----------------------------------------
+FROM chef AS planner
+COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
-FROM rust as cacher
-WORKDIR app
-RUN cargo install cargo-chef
+# ---- build dependencies (cached), then the app -----------------------------
+FROM chef AS builder
 COPY --from=planner /app/recipe.json recipe.json
-RUN date
-RUN cat /etc/localtime && echo Asia/Jakarta > /etc/timezone && \
-ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime && \
-dpkg-reconfigure -f noninteractive tzdata
-
-RUN date && apt-get update && apt-get install -y build-essential libssl-dev clang llvm-dev libclang-dev
 RUN cargo chef cook --release --recipe-path recipe.json
-
-FROM rust as builder
-WORKDIR app
-COPY docker .
-COPY --from=cacher /app/target target
-COPY --from=cacher /usr/local/cargo /usr/local/cargo
+COPY . .
+# queries are resolved from the committed .sqlx cache, so no database is needed
 ENV SQLX_OFFLINE=true
-RUN cargo build --release --bin rust-crud-sql-api
+RUN cargo build --release --bin rust-crud-sql
 
-FROM rust as runtime
-WORKDIR app
-COPY --from=builder /app/target/release/rust-crud-sql-api /app
-CMD ["/app/rust-crud-sql-api"]
+# ---- runtime ----------------------------------------------------------------
+FROM debian:bookworm-slim AS runtime
+WORKDIR /app
+ENV TZ=Asia/Jakarta
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates tzdata \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+    && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /app/target/release/rust-crud-sql /usr/local/bin/rust-crud-sql
+EXPOSE 8000
+CMD ["rust-crud-sql"]
