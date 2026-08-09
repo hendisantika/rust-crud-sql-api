@@ -25,7 +25,7 @@ This boilerplate application offers the following endpoints, with JWT role-based
 
 <br />
 
-The **.env** file contains the mongodb connection details and encryption keys.
+The **.env** file contains the postgres connection details and encryption keys.
 
 <br />
 
@@ -41,11 +41,16 @@ Open **adminer** on your browser at **http://localhost:8080** (or your preferred
 *db/initial.sql***
 
     Type: Postgres
-    Server: localhost
+    Server: db
     Port: 5432
     Username: demo
     Password: demo
     Database: demo
+
+Adminer runs inside the compose network, so it reaches postgres by its service
+name **db** on port 5432. From the host -- psql, a GUI client, `cargo run` --
+use **localhost:5434** instead (5433 is avoided as it commonly collides with
+SSH tunnels).
 
 <br />
 
