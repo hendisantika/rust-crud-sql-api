@@ -7,8 +7,13 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: always
+    # DATABASE_URL / JWT_SECRET / ARGON_SECRET / HOST come from here; the
+    # binary has no defaults for them and exits on startup if they are unset
+    env_file:
+      - .env.dev
     environment:
       COMPOSE_CONVERT_WINDOWS_PATHS: 1
 
@@ -24,6 +29,11 @@ services:
       POSTGRES_USER: demo
       POSTGRES_PASSWORD: demo
       POSTGRES_DB: demo
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U demo -d demo" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     restart: always
 
   adminer:
