@@ -8,7 +8,7 @@ authors = ["Hendi Santika<hendisantika@yahoo.co.id>"]
 
 [dependencies]
 tokio = { version = "1.37.0", features = ["full"] }
-warp = "0.3.7"
+warp = "0.4.3"
 dotenv = "0.15.0"
 #clap = "4.5.4"
 clap = { version = "4.5.4", features = ["derive", "env"] }
